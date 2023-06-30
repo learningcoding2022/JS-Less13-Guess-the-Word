@@ -123,6 +123,15 @@ const updateWordInProgress = function (guessedLetters) {
         revealWord.push("●");
         }
     }
+//The next step would be to update the innerText of the wordInProgress variable with the letters stored in the revealWord array. Once you add that piece of code within the updateWordInProgress function, the letters should appear.
+wordInProgress.innerText = revealWord.join("");
+checkForWinner();
 };
 
 //Create a function to check if the player won
+checkForWinner = function () {
+    if (word.toUpperCase() === wordInProgress.innerText) {
+        message.classList.add("win");
+        message.innerHTML = `<p class = "highlight">You guessed the correct word Congrats!</p>`;    
+    }
+};
