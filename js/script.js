@@ -24,22 +24,39 @@ const message = document.querySelector(".message");
 //The hidden button that will appear prompting the player to play again.
 const playAgainButton = document.querySelector(".play-again");
 
-const word = "magnolia";
+let word = "magnolia";
+//why is this const changed to let
 //add a new global variable for player guesses
 const guessedLetters = [];
+
+//create a global variable called remainingGuesses and set it to a value of 8
+let remainingGuesses = 8;
+//why is this let? and why will the value change?
+
+//add an async function
+const getWord = async function () {
+    const response = await fetch("https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt");
+    const words = await response.text();
+    //this is the delimiter used to create a new array in order to grab a random word
+    const wordArray = words.split("\n");
+    const randomIndex = Math.floor(Math.random() * wordArray.length);
+    word = wordArray[randomIndex].trim();
+    circlesPlaceholders(word);
+};
+
+getWord();
+//Where do the results of getWord(); show up? I didn't see anything in the console of dev tools.
 
 //write a function to add placeholders for each letter
 const circlesPlaceholders = function (word) {
     const placeholderLetters = [];
     for (const letter of word) {
-        console.log(letter);
+        //console.log(letter);
         //why push the placeholderLetters?
         placeholderLetters.push("●");
     }
     wordInProgress.innerText = placeholderLetters.join("");
 };
-
-circlesPlaceholders(word);
 
 //Step 3 of 6 Accept and Validate Player Guesses
 
@@ -89,6 +106,7 @@ const makeGuess = function (guess) {
     } else { 
         guessedLetters.push(guess);
         console.log(guessedLetters);
+        updateRemainingGuesses(guess);
         displayGuessedLetters();
         updateWordInProgress(guessedLetters);
     }
@@ -128,10 +146,33 @@ wordInProgress.innerText = revealWord.join("");
 checkForWinner();
 };
 
-//Create a function to check if the player won
-checkForWinner = function () {
-    if (word.toUpperCase() === wordInProgress.innerText) {
-        message.classList.add("win");
-        message.innerHTML = `<p class = "highlight">You guessed the correct word Congrats!</p>`;    
+//create a Function to Count Guesses Remaining
+const updateRemainingGuesses = function (guess) {
+    const upperWord = word.toUpperCase();
+    if (!upperWord.includes(guess)) {
+        message.innerText = `Sorry, the word has no ${guess}.`;
+        remainingGuesses -= 1; //subtracts the  value and reassigns the variable the new value
+    } else {
+        message.innerText = `Nice guess! The word has the letter ${guess}.`;
+    }
+
+    if (remaininingGuesses === 0) {
+        message.innerHTML = `Sorry, the game is over! The word was <span class="highlight">${word}</span>.`;
+    } else if (remainingGuesses === 1) {
+        remainingGuessesSpan.innerText = `${remainingGuesses} guess`;
+    } else {
+        remainingGuessesSpan.innerText = `${remainingGuesses} guesses`;
     }
 };
+
+//Create a function to check if the player won
+const checkForWinner = function () {
+    if (word.toUpperCase() === wordInProgress.innerText) {
+        message.classList.add("win");
+        message.innerHTML = `<p class="highlight">You guessed the correct word! Congrats!</p>`;    
+    }
+};
+
+//Step 5 of 6 Fetch Words and Remaining Guesses
+
+//create a Function to Count Guesses Remaining
